@@ -6,50 +6,51 @@ using UnityEngine.UI;
 public class GameController : MonoBehaviour
 {
     public PathFinding pathFinding;
-    public Moverment gameController;
+    public Moverment gameMoverment;
     public Canvas gameBoard;
+    public GameObject ball;
+    BallMap ballMap;
     int iz=0;
     private void Start()
     {
-        pathFinding = new PathFinding(9, 9);
-        gameController.Grid = pathFinding.Grid;
-        gameBoard.GetComponent<RectTransform>().sizeDelta = new Vector2(9*gameController.Grid.CellSize, 9* gameController.Grid.CellSize);
-        for(int i = 0; i < gameController.Grid.Height - 1; i++)
-        {
-            Node node = new Node(5, i);
-            node.IsWalkable = false;
-            gameController.Grid.SetValue(5, i, node);
-        }
-        for (int i = gameController.Grid.Height; i >0; i--)
-        {
-            Node node = new Node(3, i);
-            node.IsWalkable = false;
-            gameController.Grid.SetValue(3, i, node);
-        }
-
+        pathFinding = new PathFinding(9,9 ,3,transform.position);
+        pathFinding.direction = DirectionType.EightPath;
+        gameMoverment.Grid = pathFinding.Grid;
+        Debug.Log(pathFinding.direction);
+ 
     }
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0)&&!gameController.isMoving)
+        //move
+        if (Input.GetMouseButtonDown(0)&&!gameMoverment.isMoving)
         {
-           
-            gameController.moveQueue.Clear();
+            StopCoroutine(gameMoverment.MoveQueue());
+            gameMoverment.moveQueue.Clear();
             Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             pathFinding.Grid.GetXY(mouseWorldPos, out int endX, out int endY);
-            pathFinding.Grid.GetXY(gameController.target.transform.position, out int startX, out int startY);
-            Debug.Log(startX+" "+startY);
-            List<Node> path = pathFinding.FindPath(startX,startY,endX,endY);
+            pathFinding.Grid.GetXY(gameMoverment.target.transform.position, out int startX, out int startY);
+           pathFinding.FindPath(startX,startY,endX,endY);
+            List<Node> path = pathFinding.Grid.path;
             foreach (Node i in path)
             {
-                
+                Debug.Log(i.X + " " + i.Y);
                 Vector2 worldPos = pathFinding.Grid.GetWorldPosition(i.X, i.Y);
-                gameController.moveQueue.Enqueue(new Vector2(worldPos.x + 1, worldPos.y + 1));
+                gameMoverment.moveQueue.Enqueue(new Vector2(worldPos.x + pathFinding.Grid.CellSize/2, worldPos.y + pathFinding.Grid.CellSize / 2));
              
             }
            
-            StartCoroutine( gameController.MoveQueue());
+            StartCoroutine( gameMoverment.MoveQueue());
         }
-        DrawPath(gameController.moveQueue.ToArray());
+        if (Input.GetMouseButtonDown(1))
+        {
+            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            pathFinding.Grid.GetXY(mouseWorldPos, out int x, out int y);
+            Node node = new Node(x,y);
+            node.IsWalkable = !pathFinding.Grid.GetValue(x,y).IsWalkable;
+            pathFinding.Grid.SetValue(x, y, node);
+        }
+        DrawPath(gameMoverment.moveQueue.ToArray());
+
     }
     public void DrawPath(Vector2[] listPos)
     {

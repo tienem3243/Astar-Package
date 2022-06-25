@@ -1,14 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class CustomGrid
+public class GridMap
 {
     private int width, height;
     private float cellSize;
     private Node[,] gridArray;
     private TextMesh[,] debugArray;
     private Vector3 basePos;
-
+    public List<Node> path;
     public int Width { get => width; set => width = value; }
     public int Height { get => height; set => height = value; }
     public float CellSize { get => cellSize; set => cellSize = value; }
@@ -17,7 +17,7 @@ public class CustomGrid
     public Vector3 BasePos { get => basePos; set => basePos = value; }
     public TextMesh[,] DebugArray { get => debugArray; set => debugArray = value; }
 
-    public CustomGrid(int width, int height, int cellSize, Vector3 basePos)
+    public GridMap(int width, int height, int cellSize, Vector3 basePos)
     {
         this.Width = width;
         this.Height = height;
@@ -27,15 +27,15 @@ public class CustomGrid
         DebugArray = new TextMesh[Width, height];
         for (int i = 0; i < GridArray.GetLength(0); i++)
             for (int j = 0; j < GridArray.GetLength(1); j++)
-            {        
+            {
                 GridArray[i, j] = new Node(i, j);
-                DebugArray[i, j] = CreatWorldText(null, GetWorldPosition(i, j) + new Vector3(cellSize, cellSize) * .5f, i+"."+j, Color.white, 355, 2);
+                DebugArray[i, j] = CreatWorldText(null, GetWorldPosition(i, j) + new Vector3(cellSize, cellSize) * .5f, "O", Color.white, 355, 2);
                 Debug.DrawLine(GetWorldPosition(i, j), GetWorldPosition(i, j + 1), Color.white, 100f);
                 Debug.DrawLine(GetWorldPosition(i, j), GetWorldPosition(i + 1, j), Color.white, 100f);
             }
         Debug.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height), Color.white, 100f);
         Debug.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height), Color.white, 100f);
-        
+
     }
 
 
@@ -76,7 +76,8 @@ public class CustomGrid
             GridArray[x, y] = value;
             //TODO need make visual debug better
             if (!GridArray[x, y].IsWalkable)
-            DebugArray[x, y].text ="X";
+                DebugArray[x, y].text = "X";
+            else DebugArray[x, y].text = "O";
         }
 
     }
@@ -101,4 +102,5 @@ public class CustomGrid
         GetXY(worldPos, out x, out y);
         return GetValue(x, y);
     }
+
 }

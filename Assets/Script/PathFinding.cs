@@ -1,106 +1,113 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class PathFinding : MonoBehaviour
+public enum DirectionType { FourPath, EightPath };
+public class PathFinding
 {
-    private List<Node> openList, closeList;
-    private CustomGrid grid;
+    public const float DIAGONAL_MOVE_COST = 1.4f, STRAIGHT_MOVE_COST = 1f;
+    private GridMap grid;
 
-    public CustomGrid Grid { get => grid; set => grid = value; }
-    public PathFinding(int width,int height)
+    [SerializeField] public DirectionType direction;
+    public GridMap Grid { get => grid; set => grid = value; }
+    public PathFinding(int width, int height, int cellSize, Vector3 position)
     {
-        grid = new CustomGrid(width, height,2, new Vector2(0,0));
+        grid = new GridMap(width, height, cellSize, position);
     }
-    public List<Node> FindPath(int startX, int startY, int endX, int endY)
+
+    //Return a list of path 
+    public void FindPath(int startX, int startY, int endX, int endY)
     {
-        Node startNode = Grid.GetValue(startX, startY);
-        Node endNode = Grid.GetValue(endX, endY);
-        openList = new List<Node>() { startNode };
-        closeList = new List<Node>();
-        //init
-        for (int i = 0; i < Grid.Width; i++)
-        {
-            for (int j = 0; j < Grid.Height; j++)
-            {
-                Node node = Grid.GetValue(i, j);
-                node.G = int.MaxValue;
-                node.CalculateFCost();
-                node.CameFromNode = null;
-            }
-        }
-        startNode.G = 0;
-        startNode.H = CalculateDistanceCos(startNode, endNode);
-        startNode.CalculateFCost();
+        Node startNode = grid.GetValue(startX, startY);
+        Node targetNode = grid.GetValue(endX, endY);
 
-        while (openList.Count > 0)
-        {
-            Node currentNode = GetLowestFCostNode(openList);
-            if (currentNode == endNode)
-            {
-                return (CalculatePathNode(endNode));
-            }
+        List<Node> openSet = new List<Node>();
+        HashSet<Node> closedSet = new HashSet<Node>();
+        openSet.Add(startNode);
 
-            openList.Remove(currentNode);
-            closeList.Add(currentNode);
-            foreach (Node i in FindNeighber(currentNode))
+        while (openSet.Count > 0)
+        {
+            Node node = openSet[0];
+            for (int i = 1; i < openSet.Count; i++)
             {
-                //Ignore which has already in close list be cause it was checked
-                if (closeList.Contains(i)) continue;
-                if (!i.IsWalkable)
+                if (openSet[i].fCost() <= node.fCost() )
                 {
-                    closeList.Add(i);
+                    if (openSet[i].H < node.H)
+                        node = openSet[i];
+                }
+            }
+
+            openSet.Remove(node);
+            closedSet.Add(node);
+
+            if (node == targetNode)
+            {
+                RetracePath(startNode,targetNode);
+                return;
+            }
+
+            foreach (Node neighbour in FindNeighber(node))
+            {
+                if (!neighbour.IsWalkable || closedSet.Contains(neighbour))
+                {
                     continue;
                 }
-                float tentativeGCost = currentNode.G + CalculateDistanceCos(currentNode, i);
 
-                if (tentativeGCost < i.G)
+                float newCostToNeighbour = node.G + CalculateDistanceCos(node, neighbour);
+                if (newCostToNeighbour < neighbour.G|| !openSet.Contains(neighbour))
                 {
-                    i.CameFromNode = currentNode;
-                    i.G = tentativeGCost;
-                    i.H = CalculateDistanceCos(i, endNode);
-                    i.CalculateFCost();
-                    //add to OpenList new node
-                    if (!openList.Contains(i)) { openList.Add(i); }
+                    neighbour.G = newCostToNeighbour;
+                    neighbour.H = CalculateDistanceCos(neighbour, targetNode);
+                    neighbour.CameFromNode = node;
+
+                    if (!openSet.Contains(neighbour))
+                        openSet.Add(neighbour);
                 }
-                
             }
         }
-        //out of not open list
-        return null;
     }
-    //focus this
-    public List<Node> CalculatePathNode(Node endNode)
+    //Reverse calculate node when generate path done
+    void RetracePath(Node startNode, Node endNode)
     {
         List<Node> path = new List<Node>();
-        path.Add(endNode);
         Node currentNode = endNode;
-        while (currentNode.CameFromNode != null)
+
+        while (currentNode != startNode)
         {
             path.Add(currentNode);
             currentNode = currentNode.CameFromNode;
-
         }
         path.Reverse();
-        return path;
+
+        grid.path = path;
+
     }
     public float CalculateDistanceCos(Node start, Node end)
     {
         int xDis = Mathf.Abs(start.X - end.X);
         int yDis = Mathf.Abs(start.Y - end.Y);
-        return xDis + yDis;
+        int remaining = Mathf.Abs(xDis - yDis);
+        return DIAGONAL_MOVE_COST * Mathf.Min(xDis, yDis) + STRAIGHT_MOVE_COST * remaining;
     }
-    public List<Node> FindNeighber(Node currnentNode)
+    private List<Node> FindNeighber(Node currnentNode)
     {
         List<Node> neighber = new List<Node>();
-        //Left
-        if (currnentNode.X - 1 >= 0) neighber.Add(Grid.GetValue(currnentNode.X - 1, currnentNode.Y));
-        //Right
-        if (currnentNode.X + 1 < Grid.Width) neighber.Add(Grid.GetValue(currnentNode.X + 1, currnentNode.Y));
-        //Up
-        if (currnentNode.Y + 1 < Grid.Height) neighber.Add(Grid.GetValue(currnentNode.X, currnentNode.Y+1));
-        //Down
-        if (currnentNode.Y - 1 >= 0) neighber.Add(Grid.GetValue(currnentNode.X , currnentNode.Y-1));
+
+        for (int x = -1; x <= 1; x++)
+        {
+            for (int y = -1; y <= 1; y++)
+            {
+                if (x == 0 && y == 0)
+                    continue;
+
+                int checkX = currnentNode.X + x;
+                int checkY = currnentNode.Y + y;
+                if (checkX >= 0 && checkX < grid.Width&& checkY >= 0 && checkY < grid.Height)
+                {
+                    neighber.Add(grid.GetValue(checkX, checkY));
+                }
+            }
+        }
+
         return neighber;
     }
     public Node GetLowestFCostNode(List<Node> nodeList)
@@ -108,7 +115,7 @@ public class PathFinding : MonoBehaviour
         Node lowestNode = nodeList[0];
         foreach (Node i in nodeList)
         {
-            if (i.F < lowestNode.F)
+            if (i.fCost() < lowestNode.fCost())
             {
                 lowestNode = i;
             }

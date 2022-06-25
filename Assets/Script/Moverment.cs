@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Moverment : MonoBehaviour
 {
-    CustomGrid grid;
+    GridMap grid;
    public bool isMoving;
     public Queue<Vector2> moveQueue;
     public GameObject target;
@@ -12,7 +12,7 @@ public class Moverment : MonoBehaviour
 
     public Vector2 currentNode;
 
-    public CustomGrid Grid { get => grid; set => grid = value; }
+    public GridMap Grid { get => grid; set => grid = value; }
 
     private void Start()
     {
@@ -25,18 +25,13 @@ public class Moverment : MonoBehaviour
             if (isMoving&&new Vector2(x,y)!=currentNode)
             {
                   currentNode=new Vector2(x,y);
-                // HeadPointer(gameObject);
+                //HeadPointer(gameObject);
             }
             //move
      
        
     }
-    [ContextMenu("testMove")]
-    public void MoveTest()
-    {
-        if(moveQueue.Count>=0&&!isMoving)
-        StartCoroutine(MoveQueue());
-    }
+   
     public Vector2 GetObjectPosOnBoard(Vector2 des)
     {
         int x, y;

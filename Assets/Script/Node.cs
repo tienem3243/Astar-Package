@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Node {
-    float g=0, h=0, f=0;
+    float g, h ;
     int x, y;
     bool isWalkable;
     Node comeFrom;
@@ -23,12 +23,10 @@ public class Node {
     {
         this.G = g;
         this.H = h;
-        this.F = f;
     }
     
     public float G { get => g; set => g = value; }
     public float H { get => h; set => h = value; }
-    public float F { get => f; set => f = value; }
     public int X { get => x; set => x = value; }
     public int Y { get => y; set => y = value; }
     public Node CameFromNode { get => comeFrom; set => comeFrom = value; }
@@ -38,8 +36,8 @@ public class Node {
     {
         return x + " " + y;
     }
-    public void CalculateFCost()
+    public float fCost()
     {
-        f = g + h;
+        return g + h;
     }
 }
