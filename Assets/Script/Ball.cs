@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Ball :MonoBehaviour
+public class Ball : MonoBehaviour
 {
-    [SerializeField]public Color color;
+    [SerializeField] public Color color;
     [SerializeField] public int x;
     [SerializeField] public int y;
 
@@ -14,6 +14,4 @@ public class Ball :MonoBehaviour
         this.x = x;
         this.y = y;
     }
-
-  
 }

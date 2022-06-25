@@ -2,14 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Node {
-    float g, h ;
+public class Node
+{
+    float g, h;
     int x, y;
     bool isWalkable;
     Node comeFrom;
     public Node()
     {
-        
+
     }
 
     public Node(int x, int y)
@@ -24,7 +25,7 @@ public class Node {
         this.G = g;
         this.H = h;
     }
-    
+
     public float G { get => g; set => g = value; }
     public float H { get => h; set => h = value; }
     public int X { get => x; set => x = value; }
@@ -36,8 +37,11 @@ public class Node {
     {
         return x + " " + y;
     }
-    public float fCost()
+    public float F
     {
-        return g + h;
+        get
+        {
+            return g + h;
+        }
     }
 }

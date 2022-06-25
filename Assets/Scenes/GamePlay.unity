@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 12251001}
   - component: {fileID: 12251000}
   m_Layer: 0
-  m_Name: Square
+  m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -199,7 +199,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 12250998}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1, y: 1, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -319,9 +319,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameMoverment: {fileID: 776759299}
-  gameBoard: {fileID: 0}
-  mapName: custumdata
-  ball: {fileID: 8840768955115051831, guid: 6ad8ad5f853d178449c4779fea7d8d2c, type: 3}
 --- !u!4 &776759298
 Transform:
   m_ObjectHideFlags: 0
@@ -329,8 +326,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 776759296}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.76, y: 0.38, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

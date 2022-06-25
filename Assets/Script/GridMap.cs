@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class GridMap
+public class GridMap 
 {
     private int width, height;
     private float cellSize;
@@ -29,17 +29,22 @@ public class GridMap
             for (int j = 0; j < GridArray.GetLength(1); j++)
             {
                 GridArray[i, j] = new Node(i, j);
+            }
+        DrawGrid(width, height, cellSize);
+
+    }
+    private void DrawGrid(int width, int height, int cellSize)
+    {
+        for (int i = 0; i < GridArray.GetLength(0); i++)
+            for (int j = 0; j < GridArray.GetLength(1); j++)
+            {
                 DebugArray[i, j] = CreatWorldText(null, GetWorldPosition(i, j) + new Vector3(cellSize, cellSize) * .5f, "O", Color.white, 355, 2);
                 Debug.DrawLine(GetWorldPosition(i, j), GetWorldPosition(i, j + 1), Color.white, 100f);
                 Debug.DrawLine(GetWorldPosition(i, j), GetWorldPosition(i + 1, j), Color.white, 100f);
             }
         Debug.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height), Color.white, 100f);
         Debug.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height), Color.white, 100f);
-
     }
-
-
-
 
     public static TextMesh CreatWorldText(Transform parent, Vector3 position, string text, Color color, int fontSize, int sortingOrder)
     {
@@ -101,6 +106,28 @@ public class GridMap
         int x, y;
         GetXY(worldPos, out x, out y);
         return GetValue(x, y);
+    }
+    public List<Node> FindNeighber(Node currnentNode)
+    {
+        List<Node> neighber = new List<Node>();
+
+        for (int x = -1; x <= 1; x++)
+        {
+            for (int y = -1; y <= 1; y++)
+            {
+                if (x == 0 && y == 0)
+                    continue;
+
+                int checkX = currnentNode.X + x;
+                int checkY = currnentNode.Y + y;
+                if (checkX >= 0 && checkX < Width && checkY >= 0 && checkY < Height)
+                {
+                    neighber.Add(GetValue(checkX, checkY));
+                }
+            }
+        }
+
+        return neighber;
     }
 
 }
