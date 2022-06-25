@@ -1,13 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class GridMap 
+public class GridMap : MonoBehaviour
 {
-    private int width, height;
-    private float cellSize;
+    [SerializeField] private int width, height;
+    [SerializeField] private float cellSize;
     private Node[,] gridArray;
     private TextMesh[,] debugArray;
-    private Vector3 basePos;
+    [SerializeField] private Vector3 basePos;
     public List<Node> path;
     public int Width { get => width; set => width = value; }
     public int Height { get => height; set => height = value; }
@@ -17,6 +17,15 @@ public class GridMap
     public Vector3 BasePos { get => basePos; set => basePos = value; }
     public TextMesh[,] DebugArray { get => debugArray; set => debugArray = value; }
 
+    private void OnDrawGizmos()
+    {
+        DrawGrid();
+    }
+    private void Awake()
+    {
+        InitGrid();
+
+    }
     public GridMap(int width, int height, int cellSize, Vector3 basePos)
     {
         this.Width = width;
@@ -24,26 +33,36 @@ public class GridMap
         this.CellSize = cellSize;
         this.BasePos = basePos;
         GridArray = new Node[width, height];
-        DebugArray = new TextMesh[Width, height];
+        DebugArray = new TextMesh[width, height];
         for (int i = 0; i < GridArray.GetLength(0); i++)
             for (int j = 0; j < GridArray.GetLength(1); j++)
             {
                 GridArray[i, j] = new Node(i, j);
             }
-        DrawGrid(width, height, cellSize);
-
     }
-    private void DrawGrid(int width, int height, int cellSize)
+    private void InitGrid()
     {
+        GridArray = new Node[width, height];
+        DebugArray = new TextMesh[width, height];
         for (int i = 0; i < GridArray.GetLength(0); i++)
             for (int j = 0; j < GridArray.GetLength(1); j++)
             {
-                DebugArray[i, j] = CreatWorldText(null, GetWorldPosition(i, j) + new Vector3(cellSize, cellSize) * .5f, "O", Color.white, 355, 2);
-                Debug.DrawLine(GetWorldPosition(i, j), GetWorldPosition(i, j + 1), Color.white, 100f);
-                Debug.DrawLine(GetWorldPosition(i, j), GetWorldPosition(i + 1, j), Color.white, 100f);
+                GridArray[i, j] = new Node(i, j);
             }
-        Debug.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height), Color.white, 100f);
-        Debug.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height), Color.white, 100f);
+    }
+
+
+    private void DrawGrid()
+    {
+        for (int i = 0; i < width; i++)
+            for (int j = 0; j < height; j++)
+            {
+                //DebugArray[i, j] = CreatWorldText(gameObject.transform, GetWorldPosition(i, j) + new Vector3(cellSize, cellSize) * .5f, "O", Color.white, 355, 2);
+                Gizmos.DrawLine(GetWorldPosition(i, j), GetWorldPosition(i, j + 1));
+                Gizmos.DrawLine(GetWorldPosition(i, j), GetWorldPosition(i + 1, j));
+            }
+        Gizmos.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height));
+        Gizmos.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height));
     }
 
     public static TextMesh CreatWorldText(Transform parent, Vector3 position, string text, Color color, int fontSize, int sortingOrder)

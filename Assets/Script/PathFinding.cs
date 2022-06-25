@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 public enum DirectionType { FourPath, EightPath };
-public class PathFinding
+public class PathFinding : MonoBehaviour
 {
     private const float DIAGONAL_MOVE_COST = 1.4f, STRAIGHT_MOVE_COST = 1f;
-    private GridMap grid;
+    [SerializeField]private GridMap grid;
     [SerializeField] public DirectionType direction;
     public GridMap Grid { get => grid; set => grid = value; }
     public PathFinding(int width, int height, int cellSize, Vector3 position)

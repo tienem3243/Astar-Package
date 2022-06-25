@@ -8,13 +8,7 @@ public class GameController : MonoBehaviour
     public PathFinding pathFinding;
     public Moverment gameMoverment;
    
-    private void Start()
-    {
-        pathFinding = new PathFinding(9, 9, 3, transform.position);
-        pathFinding.direction = DirectionType.EightPath;
-        Debug.Log(pathFinding.direction);
-
-    }
+  
     private void Update()
     {
         //move
