@@ -12,24 +12,14 @@ public class GameController : MonoBehaviour
     private void Update()
     {
         //move
-        if (Input.GetMouseButtonDown(0) && !gameMoverment.isMoving)
-        {
-            StopCoroutine(gameMoverment.MoveQueue());
-            gameMoverment.moveQueue.Clear();
-            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            pathFinding.Grid.GetXY(mouseWorldPos, out int endX, out int endY);
-            pathFinding.Grid.GetXY(gameMoverment.target.transform.position, out int startX, out int startY);
-            pathFinding.FindPath(startX, startY, endX, endY);
-            List<Node> path = pathFinding.Grid.path;
-            foreach (Node i in path)
-            {
-                Vector2 worldPos = pathFinding.Grid.GetWorldPosition(i.X, i.Y);
-                gameMoverment.moveQueue.Enqueue(new Vector2(worldPos.x + pathFinding.Grid.CellSize / 2, worldPos.y + pathFinding.Grid.CellSize / 2));
+        MoveFollowPath();
+        SetObtacle();
+        DrawPath(gameMoverment.moveQueue.ToArray());
 
-            }
+    }
 
-            StartCoroutine(gameMoverment.MoveQueue());
-        }
+    private void SetObtacle()
+    {
         if (Input.GetMouseButtonDown(1))
         {
             Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -38,9 +28,35 @@ public class GameController : MonoBehaviour
             node.IsWalkable = !pathFinding.Grid.GetValue(x, y).IsWalkable;
             pathFinding.Grid.SetValue(x, y, node);
         }
-        DrawPath(gameMoverment.moveQueue.ToArray());
-
     }
+
+    private void MoveFollowPath()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            StopMove();
+            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            pathFinding.Grid.GetXY(mouseWorldPos, out int endX, out int endY);
+            pathFinding.Grid.GetXY(gameMoverment.player.transform.position, out int startX, out int startY);
+            pathFinding.FindPath(startX, startY, endX, endY);
+            List<Node> path = pathFinding.Grid.path;
+            foreach (Node i in path)
+            {
+                Vector2 worldPos = pathFinding.Grid.GetWorldPosition(i.X, i.Y);
+                gameMoverment.moveQueue.Enqueue(new Vector2(worldPos.x + pathFinding.Grid.CellSize / 2, worldPos.y + pathFinding.Grid.CellSize / 2));
+            }
+
+            StartCoroutine(gameMoverment.MoveQueue());
+        }
+    }
+
+    private void StopMove()
+    {
+        gameMoverment.moveQueue.Clear();
+        gameMoverment.isMoving = false;
+        gameMoverment.StopAllCoroutines();
+    }
+
     public void DrawPath(Vector2[] listPos)
     {
         for (int i = 0; i < listPos.Length - 1; i++)

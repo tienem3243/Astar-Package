@@ -5,6 +5,7 @@ public class GridMap : MonoBehaviour
 {
     [SerializeField] private int width, height;
     [SerializeField] private float cellSize;
+    public bool visualObtacles;
     private Node[,] gridArray;
     private TextMesh[,] debugArray;
     [SerializeField] private Vector3 basePos;
@@ -24,7 +25,7 @@ public class GridMap : MonoBehaviour
     private void Awake()
     {
         InitGrid();
-
+       
     }
     public GridMap(int width, int height, int cellSize, Vector3 basePos)
     {
@@ -48,6 +49,10 @@ public class GridMap : MonoBehaviour
             for (int j = 0; j < GridArray.GetLength(1); j++)
             {
                 GridArray[i, j] = new Node(i, j);
+                if (visualObtacles)
+                {
+                    VisualObtacles(i, j);
+                }
             }
     }
 
@@ -57,12 +62,17 @@ public class GridMap : MonoBehaviour
         for (int i = 0; i < width; i++)
             for (int j = 0; j < height; j++)
             {
-                //DebugArray[i, j] = CreatWorldText(gameObject.transform, GetWorldPosition(i, j) + new Vector3(cellSize, cellSize) * .5f, "O", Color.white, 355, 2);
                 Gizmos.DrawLine(GetWorldPosition(i, j), GetWorldPosition(i, j + 1));
                 Gizmos.DrawLine(GetWorldPosition(i, j), GetWorldPosition(i + 1, j));
             }
         Gizmos.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height));
         Gizmos.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height));
+    }
+
+    private void VisualObtacles(int i,int j)
+    {
+        DebugArray[i, j] = CreatWorldText(gameObject.transform, GetWorldPosition(i, j) + new Vector3(cellSize, cellSize) * .5f, "O", Color.white, 355, 2);
+       
     }
 
     public static TextMesh CreatWorldText(Transform parent, Vector3 position, string text, Color color, int fontSize, int sortingOrder)
