@@ -29,9 +29,14 @@ Thuật giải A*
                         Bỏ q khỏi Close
                         Thêm q vào Open
         Bước 3: Không tìm được.
+        Feature:
+        -Scan các collider trên map
+        -Tìm đường
+        
         Các class quan trọng
         Node: các điểm có thẻ hoặc không thể đi qua
-        Grid: Lưới chứa các điểm
+        Grid: Lưới chứa các node
         Pathfinding áp dụng Astar để xử lí
+        
 
 
