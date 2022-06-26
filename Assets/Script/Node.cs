@@ -20,10 +20,11 @@ public class Node
         this.IsWalkable = true;
     }
 
-    public Node(float g, float h, float f)
+    public Node(int x, int y, bool isWalkable)
     {
-        this.G = g;
-        this.H = h;
+        this.x = x;
+        this.y = y;
+        this.isWalkable = isWalkable;
     }
 
     public float G { get => g; set => g = value; }

@@ -15,7 +15,7 @@ public class Moverment : MonoBehaviour
     private void Start()
     {
         moveQueue = new Queue<Vector2>();
-   }
+    }
 
     public IEnumerator MoveToTarget(GameObject target, Vector3 destination)
     {
@@ -36,6 +36,6 @@ public class Moverment : MonoBehaviour
 
             yield return new WaitUntil(() => !isMoving);
         }
-       
+
     }
 }

@@ -7,8 +7,8 @@ public class GameController : MonoBehaviour
 {
     public PathFinding pathFinding;
     public Moverment gameMoverment;
-   
-  
+
+
     private void Update()
     {
         //move
@@ -36,10 +36,7 @@ public class GameController : MonoBehaviour
         {
             StopMove();
             Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            pathFinding.Grid.GetXY(mouseWorldPos, out int endX, out int endY);
-            pathFinding.Grid.GetXY(gameMoverment.player.transform.position, out int startX, out int startY);
-            pathFinding.FindPath(startX, startY, endX, endY);
-            List<Node> path = pathFinding.Grid.path;
+            List<Node> path = pathFinding.getPath(gameMoverment.player.transform.position, mouseWorldPos);
             foreach (Node i in path)
             {
                 Vector2 worldPos = pathFinding.Grid.GetWorldPosition(i.X, i.Y);

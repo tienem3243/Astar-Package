@@ -5,12 +5,17 @@ public enum DirectionType { FourPath, EightPath };
 public class PathFinding : MonoBehaviour
 {
     private const float DIAGONAL_MOVE_COST = 1.4f, STRAIGHT_MOVE_COST = 1f;
-    [SerializeField]private GridMap grid;
+    [SerializeField] private GridMap grid;
     [SerializeField] public DirectionType direction;
     public GridMap Grid { get => grid; set => grid = value; }
-    public PathFinding(int width, int height, int cellSize, Vector3 position)
+
+
+    public List<Node> getPath(Vector3 startPos, Vector3 endPos)
     {
-        grid = new GridMap(width, height, cellSize, position);
+        grid.GetXY(startPos, out int startX, out int startY);
+        grid.GetXY(endPos, out int endX, out int endY);
+        FindPath(startX, startY, endX, endY);
+        return grid.path;
     }
 
     //Return a list of path 
@@ -18,16 +23,10 @@ public class PathFinding : MonoBehaviour
     {
         Node startNode = grid.GetValue(startX, startY);
         Node targetNode = grid.GetValue(endX, endY);
-        if (!targetNode.IsWalkable)
-        {
-            grid.path.Clear();
-            return;
 
-        }
-        //init 2 set of A star
         List<Node> openSet = new List<Node>();
         HashSet<Node> closedSet = new HashSet<Node>();
-        
+
         openSet.Add(startNode);
 
         while (openSet.Count > 0)
@@ -43,31 +42,32 @@ public class PathFinding : MonoBehaviour
                 return;
             }
 
-            foreach (Node neighbour in grid.FindNeighber(currentNode))
-            {
-                //Brickwall or has been checked will be ignore
-                if (!neighbour.IsWalkable || closedSet.Contains(neighbour))
-                {
-                    closedSet.Add(neighbour);
-                    continue;
-                }
-                //tentative neigbour node and add to openlist which need to be check
-                TentativeNeigbour(targetNode, openSet, currentNode, neighbour);
-            }
+            addCurrentNeighbourToOpen(targetNode, openSet, closedSet, currentNode);
         }
     }
 
-    private void TentativeNeigbour(Node targetNode, List<Node> openSet, Node node, Node neighbour)
+    private void addCurrentNeighbourToOpen(Node targetNode, List<Node> openSet, HashSet<Node> closedSet, Node currentNode)
     {
-        float tentativeGcost = node.G + CalculateDistanceCos(node, neighbour);
-        if (tentativeGcost < neighbour.G || !openSet.Contains(neighbour))
+        foreach (Node neighbour in grid.FindNeighber(currentNode))
         {
-            neighbour.G = tentativeGcost;
-            neighbour.H = CalculateDistanceCos(neighbour, targetNode);
-            neighbour.CameFromNode = node;
+            //Brickwall or has been checked will be ignore
+            if (!neighbour.IsWalkable || closedSet.Contains(neighbour))
+            {
+                closedSet.Add(neighbour);
+                continue;
+            }
+            //tentative neigbour node and add to openlist which need to be check
 
-            if (!openSet.Contains(neighbour))
-                openSet.Add(neighbour);
+            float tentativeGcost = currentNode.G + CalculateDistanceCos(currentNode, neighbour);
+            if (tentativeGcost < neighbour.G || !openSet.Contains(neighbour))
+            {
+                neighbour.G = tentativeGcost;
+                neighbour.H = CalculateDistanceCos(neighbour, targetNode);
+                neighbour.CameFromNode = currentNode;
+
+                if (!openSet.Contains(neighbour))
+                    openSet.Add(neighbour);
+            }
         }
     }
 
@@ -78,15 +78,15 @@ public class PathFinding : MonoBehaviour
         {
             if (openSet[i].F <= node.F)
             {
-                if (openSet[i].H < node.H)
-                    node = openSet[i];
+                //  if (openSet[i].H < node.H)
+                node = openSet[i];
             }
         }
 
         return node;
     }
 
-    
+
     void RetracePath(Node startNode, Node endNode)
     {
         List<Node> path = new List<Node>();
@@ -109,7 +109,7 @@ public class PathFinding : MonoBehaviour
         int remaining = Mathf.Abs(xDis - yDis);
         return DIAGONAL_MOVE_COST * Mathf.Min(xDis, yDis) + STRAIGHT_MOVE_COST * remaining;
     }
-    
+
 
 
 }

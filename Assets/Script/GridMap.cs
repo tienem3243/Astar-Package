@@ -20,12 +20,11 @@ public class GridMap : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        DrawGrid();
     }
     private void Awake()
     {
         InitGrid();
-       
+
     }
     public GridMap(int width, int height, int cellSize, Vector3 basePos)
     {
@@ -69,10 +68,10 @@ public class GridMap : MonoBehaviour
         Gizmos.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height));
     }
 
-    private void VisualObtacles(int i,int j)
+    private void VisualObtacles(int i, int j)
     {
         DebugArray[i, j] = CreatWorldText(gameObject.transform, GetWorldPosition(i, j) + new Vector3(cellSize, cellSize) * .5f, "O", Color.white, 355, 2);
-       
+
     }
 
     public static TextMesh CreatWorldText(Transform parent, Vector3 position, string text, Color color, int fontSize, int sortingOrder)
