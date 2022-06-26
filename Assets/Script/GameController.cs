@@ -8,32 +8,21 @@ public class GameController : MonoBehaviour
     public PathFinding pathFinding;
     public Moverment gameMoverment;
 
-
+    
     private void Update()
     {
         //move
-        MoveFollowPath();
-        SetObtacle();
+        if (Input.GetMouseButtonDown(0))
+        {
+            MoveFollowPath();
+        }
         DrawPath(gameMoverment.moveQueue.ToArray());
 
     }
 
-    private void SetObtacle()
-    {
-        if (Input.GetMouseButtonDown(1))
-        {
-            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            pathFinding.Grid.GetXY(mouseWorldPos, out int x, out int y);
-            Node node = new Node(x, y);
-            node.IsWalkable = !pathFinding.Grid.GetValue(x, y).IsWalkable;
-            pathFinding.Grid.SetValue(x, y, node);
-        }
-    }
-
     private void MoveFollowPath()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
+       
             StopMove();
             Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             List<Node> path = pathFinding.getPath(gameMoverment.player.transform.position, mouseWorldPos);
@@ -44,7 +33,7 @@ public class GameController : MonoBehaviour
             }
 
             StartCoroutine(gameMoverment.MoveQueue());
-        }
+        
     }
 
     private void StopMove()

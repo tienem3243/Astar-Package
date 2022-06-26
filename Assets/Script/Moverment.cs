@@ -10,8 +10,7 @@ public class Moverment : MonoBehaviour
 
 
     public Vector3 currentNode;
-
-
+    
     private void Start()
     {
         moveQueue = new Queue<Vector2>();

@@ -5,7 +5,6 @@ public class GridMap : MonoBehaviour
 {
     [SerializeField] private int width, height;
     [SerializeField] private float cellSize;
-    public bool visualObtacles;
     private Node[,] gridArray;
     private TextMesh[,] debugArray;
     [SerializeField] private Vector3 basePos;
@@ -18,14 +17,19 @@ public class GridMap : MonoBehaviour
     public Vector3 BasePos { get => basePos; set => basePos = value; }
     public TextMesh[,] DebugArray { get => debugArray; set => debugArray = value; }
 
+
+
     private void OnDrawGizmos()
     {
+        Scan();
+        DrawGrid();
     }
     private void Awake()
     {
         InitGrid();
 
     }
+
     public GridMap(int width, int height, int cellSize, Vector3 basePos)
     {
         this.Width = width;
@@ -34,8 +38,8 @@ public class GridMap : MonoBehaviour
         this.BasePos = basePos;
         GridArray = new Node[width, height];
         DebugArray = new TextMesh[width, height];
-        for (int i = 0; i < GridArray.GetLength(0); i++)
-            for (int j = 0; j < GridArray.GetLength(1); j++)
+        for (int i = 0; i < width; i++)
+            for (int j = 0; j < height; j++)
             {
                 GridArray[i, j] = new Node(i, j);
             }
@@ -48,49 +52,46 @@ public class GridMap : MonoBehaviour
             for (int j = 0; j < GridArray.GetLength(1); j++)
             {
                 GridArray[i, j] = new Node(i, j);
-                if (visualObtacles)
-                {
-                    VisualObtacles(i, j);
-                }
             }
     }
-
-
-    private void DrawGrid()
+    public void Scan()
     {
+
         for (int i = 0; i < width; i++)
             for (int j = 0; j < height; j++)
             {
-                Gizmos.DrawLine(GetWorldPosition(i, j), GetWorldPosition(i, j + 1));
-                Gizmos.DrawLine(GetWorldPosition(i, j), GetWorldPosition(i + 1, j));
+                Vector3 nodePos = GetWorldPosition(i, j);
+                Collider2D col = Physics2D.OverlapCircle(nodePos+ Vector3.one * cellSize / 2, cellSize/4);
+                if (col != null)
+                {
+                    Color lowAlphaRed = new Color(1, 0, 0, 0.3f);
+                    Gizmos.color = lowAlphaRed;
+                    if (gridArray != null)
+                        GetValue(i, j).IsWalkable = false;
+
+                }
+                else
+                {
+                    Color lowAlphaGreen = new Color(0, 1, 0, 0.3f);
+                    Gizmos.color = lowAlphaGreen;
+                }
+                //Drawn node
+                Gizmos.DrawCube(GetWorldPosition(i, j)+Vector3.one*cellSize/2, Vector3.one*cellSize);
+            }
+
+    }
+    private void DrawGrid()
+    {
+        for (int x = 0; x < width; x++)
+            for (int y = 0; y < height; y++)
+            {
+
+                Gizmos.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x, y + 1));
+                Gizmos.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x + 1, y));
             }
         Gizmos.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height));
         Gizmos.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height));
     }
-
-    private void VisualObtacles(int i, int j)
-    {
-        DebugArray[i, j] = CreatWorldText(gameObject.transform, GetWorldPosition(i, j) + new Vector3(cellSize, cellSize) * .5f, "O", Color.white, 355, 2);
-
-    }
-
-    public static TextMesh CreatWorldText(Transform parent, Vector3 position, string text, Color color, int fontSize, int sortingOrder)
-    {
-        GameObject gameOject = new GameObject("WorldText", typeof(TextMesh));
-        Transform transform = gameOject.transform;
-        transform.SetParent(parent);
-        transform.position = position;
-        TextMesh textMesh = gameOject.GetComponent<TextMesh>();
-        textMesh.text = text;
-        textMesh.characterSize = 0.03f;
-        textMesh.color = color;
-        textMesh.fontSize = fontSize;
-        textMesh.anchor = TextAnchor.MiddleCenter;
-        textMesh.alignment = TextAlignment.Center;
-        textMesh.GetComponent<MeshRenderer>().sortingOrder = sortingOrder;
-        return textMesh;
-    }
-
     //convert board pos to world pos
     public Vector3 GetWorldPosition(int x, int y)
     {
@@ -116,7 +117,6 @@ public class GridMap : MonoBehaviour
     }
     public void SetValue(Vector3 worldPos, Node value)
     {
-
         int x, y;
         GetXY(worldPos, out x, out y);
         SetValue(x, y, value);

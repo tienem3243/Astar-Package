@@ -23,7 +23,11 @@ public class PathFinding : MonoBehaviour
     {
         Node startNode = grid.GetValue(startX, startY);
         Node targetNode = grid.GetValue(endX, endY);
-
+        if (targetNode.IsWalkable == false)
+        {
+            grid.path.Clear();
+            return;
+        }
         List<Node> openSet = new List<Node>();
         HashSet<Node> closedSet = new HashSet<Node>();
 
