@@ -28,9 +28,10 @@ Thuật giải A*
                     Nếu g(q) > g(p) + Cost(p, q)
                         Bỏ q khỏi Close
                         Thêm q vào Open
-        Bước 3: Không tìm được. 
+        Bước 3: Không tìm được.
+        Các class quan trọng
+        Node: các điểm có thẻ hoặc không thể đi qua
+        Grid: Lưới chứa các điểm
+        Pathfinding áp dụng Astar để xử lí
 
-Các class quan trọng 
-Node: các điểm có thẻ hoặc không thể đi qua
-Grid: Lưới chứa các điểm
-Pathfinding áp dụng Astar để xử lí
+
