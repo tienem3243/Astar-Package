@@ -31,6 +31,6 @@ Thuật giải A*
         Bước 3: Không tìm được. 
 
 Các class quan trọng 
--Node: các điểm có thẻ hoặc không thể đi qua
--Grid: Lưới chứa các điểm
--Pathfinding áp dụng Astar để xử lí
+Node: các điểm có thẻ hoặc không thể đi qua
+Grid: Lưới chứa các điểm
+Pathfinding áp dụng Astar để xử lí
