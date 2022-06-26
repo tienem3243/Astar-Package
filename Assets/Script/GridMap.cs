@@ -36,7 +36,7 @@ public class GridMap : MonoBehaviour
         this.Height = height;
         this.CellSize = cellSize;
         this.BasePos = basePos;
-        GridArray = new Node[width, height];
+        gridArray = new Node[width, height];
         DebugArray = new TextMesh[width, height];
         for (int i = 0; i < width; i++)
             for (int j = 0; j < height; j++)
@@ -46,28 +46,29 @@ public class GridMap : MonoBehaviour
     }
     private void InitGrid()
     {
-        GridArray = new Node[width, height];
+        gridArray = new Node[width, height];
         DebugArray = new TextMesh[width, height];
-        for (int i = 0; i < GridArray.GetLength(0); i++)
-            for (int j = 0; j < GridArray.GetLength(1); j++)
+        for (int i = 0; i < gridArray.GetLength(0); i++)
+            for (int j = 0; j < gridArray.GetLength(1); j++)
             {
-                GridArray[i, j] = new Node(i, j);
+                gridArray[i, j] = new Node(i, j);
             }
     }
     public void Scan()
     {
 
-        for (int i = 0; i < width; i++)
-            for (int j = 0; j < height; j++)
+        for (int x = 0; x < width; x++)
+            for (int y = 0; y < height; y++)
             {
-                Vector3 nodePos = GetWorldPosition(i, j);
-                Collider2D col = Physics2D.OverlapCircle(nodePos+ Vector3.one * cellSize / 2, cellSize/4);
+                Vector3 nodePos = GetWorldPosition(x, y);
+                Collider2D col = Physics2D.OverlapCircle(nodePos+ Vector3.one * cellSize / 2, cellSize/2);
                 if (col != null)
                 {
                     Color lowAlphaRed = new Color(1, 0, 0, 0.3f);
                     Gizmos.color = lowAlphaRed;
                     if (gridArray != null)
-                        GetValue(i, j).IsWalkable = false;
+                        gridArray[x, y].IsWalkable = false;
+                    
 
                 }
                 else
@@ -76,7 +77,7 @@ public class GridMap : MonoBehaviour
                     Gizmos.color = lowAlphaGreen;
                 }
                 //Drawn node
-                Gizmos.DrawCube(GetWorldPosition(i, j)+Vector3.one*cellSize/2, Vector3.one*cellSize);
+                Gizmos.DrawCube(GetWorldPosition(x, y)+Vector3.one*cellSize/2, Vector3.one*cellSize/2);
             }
 
     }
@@ -107,9 +108,9 @@ public class GridMap : MonoBehaviour
     {
         if (x >= 0 && y >= 0 && x < width && y < height)
         {
-            GridArray[x, y] = value;
+            gridArray[x, y] = value;
             //TODO need make visual debug better
-            if (!GridArray[x, y].IsWalkable)
+            if (!gridArray[x, y].IsWalkable)
                 DebugArray[x, y].text = "X";
             else DebugArray[x, y].text = "O";
         }
@@ -125,7 +126,7 @@ public class GridMap : MonoBehaviour
     {
         if (x >= 0 && y >= 0 && x < width && y < height)
         {
-            return GridArray[x, y];
+            return gridArray[x, y];
         }
         return null;
     }
@@ -150,7 +151,7 @@ public class GridMap : MonoBehaviour
                 int checkY = currnentNode.Y + y;
                 if (checkX >= 0 && checkX < Width && checkY >= 0 && checkY < Height)
                 {
-                    neighber.Add(GetValue(checkX, checkY));
+                    neighber.Add(gridArray[checkX, checkY]);
                 }
             }
         }
