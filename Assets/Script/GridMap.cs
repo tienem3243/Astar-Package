@@ -9,6 +9,8 @@ public class GridMap : MonoBehaviour
     private TextMesh[,] debugArray;
     [SerializeField] private Vector3 basePos;
     public List<Node> path;
+    [SerializeField] LayerMask maskCollider;
+
     public int Width { get => width; set => width = value; }
     public int Height { get => height; set => height = value; }
     public float CellSize { get => cellSize; set => cellSize = value; }
@@ -61,7 +63,7 @@ public class GridMap : MonoBehaviour
             for (int y = 0; y < height; y++)
             {
                 Vector3 nodePos = GetWorldPosition(x, y);
-                Collider2D col = Physics2D.OverlapCircle(nodePos+ Vector3.one * cellSize / 2, cellSize/2);
+                Collider2D col = Physics2D.OverlapCircle(nodePos+ Vector3.one * cellSize / 2, cellSize/2,maskCollider);
                 if (col != null)
                 {
                     Color lowAlphaRed = new Color(1, 0, 0, 0.3f);

@@ -1,12 +1,10 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
     public PathFinding pathFinding;
-    public Moverment gameMoverment;
+    public SelectionSquare selection;
 
     
     private void Update()
@@ -14,33 +12,40 @@ public class GameController : MonoBehaviour
         //move
         if (Input.GetMouseButtonDown(0))
         {
-            MoveFollowPath();
+            if(selection.selectedUnits.Count>0)
+            selection.selectedUnits.ForEach(x => {
+      
+                MoveFollowPath(x);
+                DrawPath(x.moveQueue.ToArray());
+            });
+           
         }
-        DrawPath(gameMoverment.moveQueue.ToArray());
+        
+     
 
     }
 
-    private void MoveFollowPath()
+    private void MoveFollowPath(UnitMovement move)
     {
        
-            StopMove();
+            StopMove(move);
             Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            List<Node> path = pathFinding.getPath(gameMoverment.player.transform.position, mouseWorldPos);
+            List<Node> path = pathFinding.getPath(move.transform.position, mouseWorldPos);
             foreach (Node i in path)
             {
                 Vector2 worldPos = pathFinding.Grid.GetWorldPosition(i.X, i.Y);
-                gameMoverment.moveQueue.Enqueue(new Vector2(worldPos.x + pathFinding.Grid.CellSize / 2, worldPos.y + pathFinding.Grid.CellSize / 2));
+                move.moveQueue.Enqueue(new Vector2(worldPos.x + pathFinding.Grid.CellSize / 2, worldPos.y + pathFinding.Grid.CellSize / 2));
             }
 
-            StartCoroutine(gameMoverment.MoveQueue());
+            StartCoroutine(move.MoveQueue());
         
     }
 
-    private void StopMove()
+    private void StopMove(UnitMovement move)
     {
-        gameMoverment.moveQueue.Clear();
-        gameMoverment.isMoving = false;
-        gameMoverment.StopAllCoroutines();
+        move.moveQueue.Clear();
+        move.isMoving = false;
+        move.StopAllCoroutines();
     }
 
     public void DrawPath(Vector2[] listPos)

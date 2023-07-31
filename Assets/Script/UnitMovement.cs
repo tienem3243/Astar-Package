@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Moverment : MonoBehaviour
+public class UnitMovement : MonoBehaviour
 {
     public bool isMoving;
     public Queue<Vector2> moveQueue;
-    public GameObject player;
+
 
 
     public Vector3 currentNode;
@@ -31,10 +31,14 @@ public class Moverment : MonoBehaviour
     {
         while (moveQueue.Count != 0)
         {
-            StartCoroutine(MoveToTarget(player, moveQueue.Dequeue()));
+            StartCoroutine(MoveToTarget(gameObject, moveQueue.Dequeue()));
 
             yield return new WaitUntil(() => !isMoving);
         }
 
+    }
+    public void FollowQueue()
+    {
+        StartCoroutine(MoveQueue());
     }
 }
