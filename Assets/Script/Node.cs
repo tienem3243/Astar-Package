@@ -7,6 +7,8 @@ public class Node
     float g, h;
     int x, y;
     bool isWalkable;
+    bool isConstruct;
+
     Node comeFrom;
     public Node()
     {
@@ -45,4 +47,6 @@ public class Node
             return g + h;
         }
     }
+
+    public bool IsConstruct { get => isConstruct; set => isConstruct = value; }
 }

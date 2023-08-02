@@ -10,7 +10,7 @@ public class PathFinding : MonoBehaviour
     public GridMap Grid { get => grid; set => grid = value; }
 
 
-    public List<Node> getPath(Vector3 startPos, Vector3 endPos)
+    public List<Node> GetPath(Vector3 startPos, Vector3 endPos)
     {
         grid.GetXY(startPos, out int startX, out int startY);
         grid.GetXY(endPos, out int endX, out int endY);

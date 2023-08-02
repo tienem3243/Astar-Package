@@ -4,41 +4,46 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
     public PathFinding pathFinding;
-    public SelectionSquare selection;
+    public UnitController selection;
 
-    
+
     private void Update()
     {
         //move
+       
         if (Input.GetMouseButtonDown(0))
         {
-            if(selection.selectedUnits.Count>0)
-            selection.selectedUnits.ForEach(x => {
-      
-                MoveFollowPath(x);
-                DrawPath(x.moveQueue.ToArray());
-            });
-           
+            if (selection.selectedUnits.Count > 0)
+              
+                selection.selectedUnits.ForEach(x =>
+                {
+
+                    MoveFollowPath(x.Movement);
+                    DrawPath(x.Movement.moveQueue.ToArray());
+                });
+
         }
-        
-     
+
+
 
     }
 
     private void MoveFollowPath(UnitMovement move)
     {
-       
-            StopMove(move);
-            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            List<Node> path = pathFinding.getPath(move.transform.position, mouseWorldPos);
-            foreach (Node i in path)
-            {
-                Vector2 worldPos = pathFinding.Grid.GetWorldPosition(i.X, i.Y);
-                move.moveQueue.Enqueue(new Vector2(worldPos.x + pathFinding.Grid.CellSize / 2, worldPos.y + pathFinding.Grid.CellSize / 2));
-            }
 
-            StartCoroutine(move.MoveQueue());
-        
+        StopMove(move);
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Debug.Log(pathFinding);
+        Debug.Log(pathFinding.GetPath(move.transform.position, mouseWorldPos));
+        List<Node> path = new List<Node>(pathFinding.GetPath(move.transform.position, mouseWorldPos));
+        foreach (Node i in path)
+        {
+            Vector2 worldPos = pathFinding.Grid.GetWorldPosition(i.X, i.Y);
+            move.moveQueue.Enqueue(new Vector2(worldPos.x + pathFinding.Grid.CellSize / 2, worldPos.y + pathFinding.Grid.CellSize / 2));
+        }
+
+        StartCoroutine(move.MoveQueue());
+
     }
 
     private void StopMove(UnitMovement move)

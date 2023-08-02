@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using UnityEngine.Events;
 
 
-    public class SelectionSquare : MonoBehaviour
+    public class UnitController : MonoBehaviourSingleton<UnitController>
     {
         //Add all units in the scene to this array
-        public UnitMovement[] allUnits;
+        public List<Unit> allUnits;
         //The selection square we draw when we drag the mouse to select units
         public RectTransform selectionSquareTrans;
         //To test the square's corners
@@ -22,7 +22,7 @@ using UnityEngine.Events;
    
         //All currently selected units
         [System.NonSerialized]
-        public List<UnitMovement> selectedUnits = new List<UnitMovement>();
+        public List<Unit> selectedUnits = new List<Unit>();
 
         //We have hovered above this unit, so we can deselect it next update
         //and dont have to loop through all units
@@ -45,7 +45,7 @@ using UnityEngine.Events;
             //Deactivate the square selection image
             selectionSquareTrans.gameObject.SetActive(false);
         }
-
+            
         void Update()
         {
             //Select one or several units by clicking or draging the mouse
@@ -94,9 +94,9 @@ using UnityEngine.Events;
 
                     //Select the units
                     
-                    for (int i = 0; i < allUnits.Length; i++)
+                    for (int i = 0; i < allUnits.Count; i++)
                     {
-                        UnitMovement currentUnit = allUnits[i];
+                        Unit currentUnit = allUnits[i];
 
                 //Is this unit within the square
                 if (currentUnit == null) return;
@@ -149,7 +149,7 @@ using UnityEngine.Events;
                         //Set this unit to selected
                         activeUnit.GetComponent<SpriteRenderer>().material = selectedMaterial;
                         //Add it to the list of selected units, which is now just 1 unit
-                        selectedUnits.Add(activeUnit.GetComponent<UnitMovement>());
+                        selectedUnits.Add(activeUnit.GetComponent<Unit>());
                     }
                 }
             }
@@ -171,9 +171,9 @@ using UnityEngine.Events;
 
                 //Highlight the units within the selection square, but don't select the units
              
-                    for (int i = 0; i < allUnits.Length; i++)
+                    for (int i = 0; i < allUnits.Count; i++)
                     {
-                        UnitMovement currentUnit = allUnits[i];
+                        Unit currentUnit = allUnits[i];
 
                 //Is this unit within the square
                 if (currentUnit == null) return;

@@ -9,18 +9,7 @@ public class SoulHavester : MonoBehaviour
     private List<Unit> inQueueUnits= new List<Unit>();
     public int StoragePower{ get => StoragePower; }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Unit"))
-        {
-            inQueueUnits.Add(collision.GetComponent<Unit>());
-            if (inQueueUnits.Count >= storageQueue)
-            {
-                ConvertUnitToEnergy();
-            }
-        }
-
-    }
+  
     private void ConvertUnitToEnergy()
     {
         if (inQueueUnits.Count > 0)

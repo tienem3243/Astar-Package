@@ -1,16 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class GridMap : MonoBehaviour
+public class GridMap : MonoBehaviourSingleton<GridMap>
 {
     [SerializeField] private int width, height;
     [SerializeField] private float cellSize;
     private Node[,] gridArray;
     private TextMesh[,] debugArray;
     [SerializeField] private Vector3 basePos;
-    public List<Node> path;
+    public List<Node> path=new List<Node>();
     [SerializeField] LayerMask maskCollider;
-
+    
     public int Width { get => width; set => width = value; }
     public int Height { get => height; set => height = value; }
     public float CellSize { get => cellSize; set => cellSize = value; }
@@ -23,7 +23,7 @@ public class GridMap : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Scan();
+        DebugVisible();
         DrawGrid();
     }
     private void Awake()
@@ -69,8 +69,16 @@ public class GridMap : MonoBehaviour
                     Color lowAlphaRed = new Color(1, 0, 0, 0.3f);
                     Gizmos.color = lowAlphaRed;
                     if (gridArray != null)
+                    {
                         gridArray[x, y].IsWalkable = false;
-                    
+                        //detect constructs
+                        if (col.gameObject.CompareTag("Construct"))
+                        {
+                            gridArray[x, y].IsConstruct = true;
+                            Debug.Log(col);
+                        }
+                    }
+                 
 
                 }
                 else
@@ -79,7 +87,36 @@ public class GridMap : MonoBehaviour
                     Gizmos.color = lowAlphaGreen;
                 }
                 //Drawn node
+             
                 Gizmos.DrawCube(GetWorldPosition(x, y)+Vector3.one*cellSize/2, Vector3.one*cellSize/2);
+            }
+
+    }
+    public void DebugVisible()
+    {
+
+        for (int x = 0; x < width; x++)
+            for (int y = 0; y < height; y++)
+            {
+                Vector3 nodePos = GetWorldPosition(x, y);
+              
+                if (gridArray == null) return;
+                if (!GetValue(x,y).IsWalkable)
+                {
+                    Color lowAlphaRed = new Color(1, 0, 0, 0.3f);
+                    Gizmos.color = lowAlphaRed;
+               
+
+
+                }
+                else
+                {
+                    Color lowAlphaGreen = new Color(0, 1, 0, 0.3f);
+                    Gizmos.color = lowAlphaGreen;
+                }
+                //Drawn node
+
+                Gizmos.DrawCube(GetWorldPosition(x, y) + Vector3.one * cellSize / 2, Vector3.one * cellSize / 2);
             }
 
     }
@@ -105,6 +142,8 @@ public class GridMap : MonoBehaviour
     {
         x = Mathf.FloorToInt((worldPos.x - BasePos.x) / CellSize);
         y = Mathf.FloorToInt((worldPos.y - BasePos.y) / CellSize);
+        x = Mathf.Clamp(x,0, width);
+        y = Mathf.Clamp(y, 0,height);
     }
     public void SetValue(int x, int y, Node value)
     {
@@ -118,6 +157,7 @@ public class GridMap : MonoBehaviour
         }
 
     }
+
     public void SetValue(Vector3 worldPos, Node value)
     {
         int x, y;
